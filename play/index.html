@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<script>window.HESBA_BUILD="f3f8353f3d74";</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>حسبة برما · Hesbet Barma</title>
+<meta name="description" content="Hesbet Barma: a cartoon math blocks game. Solve the equation, tap the block with the answer, and keep the stack from reaching the line. Arabic first, for every grade.">
+<meta name="theme-color" content="#173d31">
+<meta property="og:title" content="حسبة برما · Hesbet Barma">
+<meta property="og:description" content="Math blocks for every grade, with Al-Ustaz Bouma the owl and Toto the hedgehog.">
+<meta property="og:image" content="og.png?v=f3f8353f3d74">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="manifest" href="manifest.webmanifest?v=f3f8353f3d74">
+<link rel="icon" href="icons/favicon-48.png?v=f3f8353f3d74" sizes="48x48">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=f3f8353f3d74">
+<link rel="stylesheet" href="style.css?v=f3f8353f3d74">
+</head>
+<body>
+<div id="app" dir="rtl" lang="ar">
+  <header id="hud">
+    <div class="chips">
+      <div class="chip" title="score"><i data-icon="star"></i><b id="vScore">٠</b></div>
+      <div class="chip" title="coins"><i data-icon="coin"></i><b id="vCoins">٠</b></div>
+      <div class="chip" title="best"><i data-icon="trophy"></i><b id="vBest">٠</b></div>
+    </div>
+    <button class="rbtn" id="bMute" type="button" aria-label="mute"></button>
+    <button class="rbtn" id="bPause" type="button" aria-label="pause" data-aria="pauseL"><i data-icon="pause"></i></button>
+  </header>
+
+  <section id="board">
+    <div id="owl" class="beat"></div>
+    <div class="chalk" id="chalk">
+      <div class="note" id="lvl"></div>
+      <div id="eq" aria-live="polite"></div>
+      <div id="say" class="tip"></div>
+      <div class="tray"></div>
+    </div>
+  </section>
+
+  <section id="wellwrap"><canvas id="cv" tabindex="0" aria-label="Game board"></canvas></section>
+
+  <footer id="foot">
+    <div id="hog" class="beat b2"></div>
+    <div id="info"><div class="pill dim" id="pCombo"></div><div class="pill hide" id="pTime"></div></div>
+    <div id="cart"></div>
+  </footer>
+
+  <div class="ov full show" id="menu">
+    <button class="mini" id="bLang" type="button"></button>
+    <div class="card">
+      <div class="sign">
+        <svg class="sq" viewBox="0 0 56 30"><path d="M4 22 C14 2 22 28 30 10 S46 4 52 20" fill="none" stroke="#ffe27a" stroke-width="4" stroke-linecap="round"/></svg>
+        <h1 data-t="title"></h1><p data-t="tag"></p>
+      </div>
+      <div class="cast"><div class="beat" id="castOwl"></div><div class="beat b2" id="castHog"></div></div>
+      <h2 class="lab" data-t="grade"></h2>
+      <div id="grades" role="radiogroup"></div>
+      <div id="modes"></div>
+      <div class="menu-tools">
+        <button class="mtool daily" id="btnDaily" type="button"><i data-icon="calendar"></i><span data-t="b_daily"></span><span class="dot" id="dotDaily"></span></button>
+        <button class="mtool shop" id="btnShop" type="button"><i data-icon="shop"></i><span data-t="b_shop"></span></button>
+        <button class="mtool trophy" id="btnAch" type="button"><i data-icon="trophy"></i><span data-t="b_ach"></span></button>
+        <button class="mtool set" id="btnSettings" type="button"><i data-icon="gear"></i><span data-t="b_set"></span></button>
+      </div>
+      <button class="btn passbtn" id="btnPass" type="button" data-t="passBtn"></button>
+      <div class="passchip hide" id="passChip"></div>
+      <div class="wallet"><i data-icon="coin"></i><span data-t="wallet"></span><b id="mCoins"></b></div>
+    </div>
+  </div>
+
+  <div class="ov dim" id="pauseOv" role="dialog" aria-modal="true">
+    <div class="card slate">
+      <h2 class="big" data-t="paused"></h2>
+      <button class="btn gold" id="bResume" type="button" data-t="resume"></button>
+      <div class="row2"><button class="btn" id="bSettingsP" type="button" data-t="b_set"></button><button class="btn" id="bMute2" type="button"></button></div>
+      <button class="btn" id="bHome" type="button" data-t="home"></button>
+    </div>
+  </div>
+
+  <div class="ov dim" id="confirmOv" role="alertdialog" aria-modal="true" style="z-index:40">
+    <div class="card paper">
+      <h2 class="big" id="confirmTitle"></h2>
+      <p class="msg" id="confirmBody"></p>
+      <button class="btn red" id="confirmYes" type="button"></button>
+      <button class="btn gold" id="confirmNo" type="button"></button>
+    </div>
+  </div>
+
+  <div class="ov dim" id="overOv" role="dialog" aria-modal="true">
+    <div class="card slate">
+      <div class="owlbig" id="overOwl"></div>
+      <h2 class="big" id="oT"></h2>
+      <p class="msg" id="oM" style="color:var(--chalkY)"></p>
+      <div class="rec" id="oRec" data-t="newrec"></div>
+      <div class="big" id="oScore" style="direction:ltr;unicode-bidi:isolate"></div>
+      <div class="dnote hide" id="oDaily"></div>
+      <div class="stats">
+        <div class="stat"><b id="oOk"></b><span data-t="st_ok"></span></div>
+        <div class="stat"><b id="oCombo"></b><span data-t="st_combo"></span></div>
+        <div class="stat"><b id="oCoins"></b><span data-t="st_coins"></span></div>
+        <div class="stat"><b id="oBest"></b><span data-t="best"></span></div>
+      </div>
+      <div id="oAch"></div>
+      <button class="btn gold" id="bAgain" type="button" data-t="again"></button>
+      <button class="btn" id="bMenu" type="button" data-t="home"></button>
+    </div>
+  </div>
+
+  <div class="ov full" id="settingsOv" role="dialog" aria-modal="true">
+    <div class="screen-wrap">
+      <div class="screen-head"><button class="rbtn backbtn" type="button" data-aria="back"><i data-icon="back"></i></button><h2 data-t="set_title"></h2></div>
+      <div class="screen-body" id="settingsBody"></div>
+    </div>
+  </div>
+
+  <div class="ov full" id="shopOv" role="dialog" aria-modal="true">
+    <div class="screen-wrap">
+      <div class="screen-head"><button class="rbtn backbtn" type="button" data-aria="back"><i data-icon="back"></i></button><h2 data-t="shop_title"></h2>
+        <div class="pill inline"><i data-icon="coin"></i><b id="shopCoins"></b></div></div>
+      <div class="passchip hide" id="shopPass"></div>
+      <div id="shopPrev"></div>
+      <div class="tabs" id="shopTabs" role="tablist"></div>
+      <div class="screen-body"><div id="shopGrid"></div></div>
+    </div>
+  </div>
+
+  <div class="ov full" id="dailyOv" role="dialog" aria-modal="true">
+    <div class="screen-wrap">
+      <div class="screen-head"><button class="rbtn backbtn" type="button" data-aria="back"><i data-icon="back"></i></button><h2 data-t="daily_title"></h2></div>
+      <div class="screen-body" id="dailyBody"></div>
+    </div>
+  </div>
+
+  <div class="ov full" id="achOv" role="dialog" aria-modal="true">
+    <div class="screen-wrap">
+      <div class="screen-head"><button class="rbtn backbtn" type="button" data-aria="back"><i data-icon="back"></i></button><h2 data-t="ach_title"></h2>
+        <div class="pill inline"><i data-icon="trophy"></i><b id="achCount"></b></div></div>
+      <div class="screen-body" id="achBody"></div>
+    </div>
+  </div>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+</div>
+
+<script src="art/core.js?v=f3f8353f3d74"></script>
+<script src="src/data.js?v=f3f8353f3d74"></script>
+<script src="art/hats.js?v=f3f8353f3d74"></script>
+<script src="art/owl.js?v=f3f8353f3d74"></script>
+<script src="art/hedgehog.js?v=f3f8353f3d74"></script>
+<script src="art/cart.js?v=f3f8353f3d74"></script>
+<script src="art/ui.js?v=f3f8353f3d74"></script>
+<script src="art/sprites.js?v=f3f8353f3d74"></script>
+<script src="src/strings.js?v=f3f8353f3d74"></script>
+<script src="src/math.js?v=f3f8353f3d74"></script>
+<script src="src/board.js?v=f3f8353f3d74"></script>
+<script src="src/prefs.js?v=f3f8353f3d74"></script>
+<script src="src/meta.js?v=f3f8353f3d74"></script>
+<script src="src/daily.js?v=f3f8353f3d74"></script>
+<script src="src/save.js?v=f3f8353f3d74"></script>
+<script src="src/shop.js?v=f3f8353f3d74"></script>
+<script src="src/audio.js?v=f3f8353f3d74"></script>
+<script src="src/engine.js?v=f3f8353f3d74"></script>
+<script src="src/blockdraw.js?v=f3f8353f3d74"></script>
+<script src="src/render.js?v=f3f8353f3d74"></script>
+<script src="src/hud.js?v=f3f8353f3d74"></script>
+<script src="src/play.js?v=f3f8353f3d74"></script>
+<script src="src/input.js?v=f3f8353f3d74"></script>
+<script src="src/ui.js?v=f3f8353f3d74"></script>
+<script src="src/settingsui.js?v=f3f8353f3d74"></script>
+<script src="src/shopui.js?v=f3f8353f3d74"></script>
+<script src="src/dailyui.js?v=f3f8353f3d74"></script>
+<script src="src/update.js?v=f3f8353f3d74"></script>
+<script src="src/main.js?v=f3f8353f3d74"></script>
+</body>
+</html>
